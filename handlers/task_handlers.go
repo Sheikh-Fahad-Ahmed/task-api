@@ -6,7 +6,6 @@ import (
 
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
 	"github.com/Sheikh-Fahad-Ahmed/task-api/store"
@@ -30,32 +29,20 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newTaskInput)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error":"unable to decode Request body"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "unable to decode Request body"})
 		return
 	}
 
 	if newTaskInput.Title == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error":"Title is required"})
+		json.NewEncoder(w).Encode(map[string]string{"error": "Title is required"})
 		return
 	}
 
-	tasks := store.GetAll()
-
-	var id int
-	if len(tasks) > 0 {
-		id = tasks[len(tasks)-1].ID + 1
-	} else {
-		id = 1
-	}
-
-	newTask := models.New(id, newTaskInput.Title, newTaskInput.Description, newTaskInput.Status)
-	newTask.CreatedAt = time.Now()
-
-	store.Add(*newTask)
+	newTask := store.Add(newTaskInput)
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(*newTask)
+	json.NewEncoder(w).Encode(newTask)
 }
 
 func GetTaskByID(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +50,8 @@ func GetTaskByID(w http.ResponseWriter, r *http.Request) {
 	idString := vars["id"]
 	id, err := strconv.Atoi(idString)
 	if err != nil {
-		fmt.Printf("Cannot convert string id to int: %s", idString)
+		fmt.Printf("Cannot convert string id to int: %s\n", idString)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
