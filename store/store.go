@@ -10,7 +10,6 @@ import (
 
 var tasks []models.Task
 
-var nextID = 1
 
 func GetAll() []models.Task {
 	if tasks != nil {
@@ -84,4 +83,19 @@ func Update(idString string, taskInput models.TaskInput) (models.Task, error) {
 	}
 
 	return models.Task{}, errors.New("Task not Found..")
+}
+
+func Delete(idString string) error {
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		return errors.New("unable to convert id string -> int")
+	}
+
+	for i, task := range tasks {
+		if task.ID == id {
+			tasks = append(tasks[:i], tasks[i+1:]...)
+			return nil
+		}
+	}
+	return errors.New("Task not found")
 }
