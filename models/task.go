@@ -10,6 +10,12 @@ type Task struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
+type TaskInput struct {
+	Title       string `json:"title"`
+	Description string `json:"description,omitempty"`
+	Status      string `json:"status"`
+}
+
 func New(id int, title string, description string, status string) *Task {
 	return &Task{
 		ID:          id,
