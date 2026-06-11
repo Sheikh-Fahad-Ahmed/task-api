@@ -1,6 +1,10 @@
 package store
 
-import "github.com/Sheikh-Fahad-Ahmed/task-api/models"
+import (
+	"time"
+
+	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
+)
 
 var tasks []models.Task
 
@@ -13,6 +17,17 @@ func GetAll() []models.Task {
 	return []models.Task{}
 }
 
-func Add(newTask models.Task) {
-	tasks = append(tasks, newTask)
+func Add(newTaskInput models.TaskInput) models.Task {
+	var id int
+	if len(tasks) > 0 {
+		id = tasks[len(tasks)-1].ID + 1
+	} else {
+		id = 1
+	}
+
+	newTask := models.New(id, newTaskInput.Title, newTaskInput.Description, newTaskInput.Status)
+	newTask.CreatedAt = time.Now()
+
+	tasks = append(tasks, *newTask)
+	return *newTask
 }
