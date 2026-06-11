@@ -2,12 +2,15 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
 	"github.com/Sheikh-Fahad-Ahmed/task-api/store"
+	"github.com/gorilla/mux"
 )
 
 func GetTasks(w http.ResponseWriter, r *http.Request) {
@@ -15,8 +18,8 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 
 	tasks := store.GetAll()
 
-	json.NewEncoder(w).Encode(tasks)
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(tasks)
 }
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
@@ -45,4 +48,33 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(*newTask)
+}
+
+func GetTaskByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idString := vars["id"]
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		fmt.Printf("Cannot convert string id to int: %s", idString)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	tasks := store.GetAll()
+
+	if len(tasks) == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid ID"})
+		return
+	}
+
+	for _, task := range tasks {
+		if task.ID == id {
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(task)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusBadRequest)
+	json.NewEncoder(w).Encode(map[string]string{"error": "Task ID not found"})
 }
