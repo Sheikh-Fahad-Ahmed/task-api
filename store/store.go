@@ -1,6 +1,8 @@
 package store
 
 import (
+	"errors"
+	"strconv"
 	"time"
 
 	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
@@ -30,4 +32,22 @@ func Add(newTaskInput models.TaskInput) models.Task {
 
 	tasks = append(tasks, *newTask)
 	return *newTask
+}
+
+func GetByID(idString string) (models.Task, error) {
+	id, err := strconv.Atoi(idString)
+	if err != nil {
+		return models.Task{}, errors.New("unable to convert id from string -> int ")
+	}
+
+	if len(tasks) == 0 {
+		return models.Task{}, errors.New("Tasks is empty")
+	}
+
+	for _, task := range tasks {
+		if task.ID == id {
+			return task, nil
+		}
+	}
+	return models.Task{}, errors.New("Task does not exists")
 }
