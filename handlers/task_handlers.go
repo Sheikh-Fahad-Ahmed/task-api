@@ -2,10 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"net/http"
-	"strconv"
 
 	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
 	"github.com/Sheikh-Fahad-Ahmed/task-api/store"
@@ -48,29 +46,16 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 func GetTaskByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idString := vars["id"]
-	id, err := strconv.Atoi(idString)
-	if err != nil {
-		fmt.Printf("Cannot convert string id to int: %s\n", idString)
-		return
-	}
 
 	w.Header().Set("Content-Type", "application/json")
-	tasks := store.GetAll()
 
-	if len(tasks) == 0 {
+	task, err := store.GetByID(idString)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid ID"})
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 		return
 	}
 
-	for _, task := range tasks {
-		if task.ID == id {
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(task)
-			return
-		}
-	}
-
-	w.WriteHeader(http.StatusBadRequest)
-	json.NewEncoder(w).Encode(map[string]string{"error": "Task ID not found"})
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(task)
 }
