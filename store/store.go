@@ -6,5 +6,9 @@ var tasks []models.Task
 
 var nextID = 1
 
+func GetAll() []models.Task {
+	return tasks
+}
+
 
 
