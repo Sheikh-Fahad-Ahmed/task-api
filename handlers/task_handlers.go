@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+
 	"net/http"
 	"strconv"
 	"time"
@@ -29,7 +29,15 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&newTaskInput)
 	if err != nil {
-		log.Fatal("Cannot decode response body")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error":"unable to decode Request body"})
+		return
+	}
+
+	if newTaskInput.Title == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error":"Title is required"})
+		return
 	}
 
 	tasks := store.GetAll()
