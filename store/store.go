@@ -3,13 +3,13 @@ package store
 import (
 	"errors"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
 )
 
 var tasks []models.Task
-
 
 func GetAll() []models.Task {
 	if tasks != nil {
@@ -26,7 +26,8 @@ func Add(newTaskInput models.TaskInput) models.Task {
 		id = 1
 	}
 
-	newTask := models.New(id, newTaskInput.Title, newTaskInput.Description, newTaskInput.Status)
+	title := strings.TrimSpace(newTaskInput.Title)
+	newTask := models.New(id, title, newTaskInput.Description, newTaskInput.Status)
 	newTask.CreatedAt = time.Now()
 
 	tasks = append(tasks, *newTask)
@@ -62,7 +63,7 @@ func Update(idString string, taskInput models.TaskInput) (models.Task, error) {
 	for i, task := range tasks {
 		if task.ID == id {
 			if taskInput.Title != "" {
-				title = taskInput.Title
+				title = strings.TrimSpace(taskInput.Title)
 			} else {
 				title = task.Title
 			}
