@@ -7,40 +7,32 @@ import (
 
 	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
 	"github.com/Sheikh-Fahad-Ahmed/task-api/store"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
 )
 
-func GetTasks(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
+func GetTasks(c *gin.Context) {
 	tasks := store.GetAll()
+	c.JSON(http.StatusOK, tasks)
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(tasks)
 }
 
-func CreateTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
+func CreateTask(c *gin.Context) {
 	var newTaskInput models.TaskInput
 
-	err := json.NewDecoder(r.Body).Decode(&newTaskInput)
+	err := c.ShouldBindJSON(&newTaskInput)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "unable to decode Request body"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if newTaskInput.Title == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "Title is required"})
+	newTask, err := store.Add(newTaskInput)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	newTask := store.Add(newTaskInput)
-
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(newTask)
+	c.JSON(http.StatusOK, newTask)
 }
 
 func GetTaskByID(w http.ResponseWriter, r *http.Request) {
@@ -81,7 +73,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(task)
-	
+
 }
 
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
