@@ -6,7 +6,9 @@ each endpoint.
 
 ## Features
 
-1.**Full CRUD Support**: Create, Read, Update, and Delete tasks dynamically. 2.**In-Memory Store**: Fast performance using native Go slices (`[]models.Task`). 3.**Custom Logging Middleware**: Automatically captures and logs HTTP method, path, and execution duration for every incoming request.
+1. **Full CRUD Support**: Create, Read, Update, and Delete tasks dynamically.
+2. **In-Memory Store**: Fast performance using native Go slices (`[]models.Task`).
+3. **Custom Logging Middleware**: Automatically captures and logs HTTP method, path, and execution duration for every incoming request.
 
 ## Data Model
 
