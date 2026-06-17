@@ -2,30 +2,28 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/Sheikh-Fahad-Ahmed/task-api/handlers"
-	"github.com/Sheikh-Fahad-Ahmed/task-api/logger"
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	log.SetFlags(log.Ldate | log.Ltime )
+	log.SetFlags(log.Ldate | log.Ltime)
 
-	r := mux.NewRouter()
+	r := gin.Default()
 
-	r.HandleFunc("/tasks", handlers.GetTasks).Methods("GET")
-	r.HandleFunc("/tasks/{id}", handlers.GetTaskByID).Methods("GET")
+	r.GET("/tasks", handlers.GetTasks)
+	// r.HandleFunc("/tasks/{id}", handlers.GetTaskByID).Methods("GET")
 
-	r.HandleFunc("/tasks", handlers.CreateTask).Methods("POST")
+	r.POST("/tasks", handlers.CreateTask)
 
-	r.HandleFunc("/tasks/{id}", handlers.UpdateTask).Methods("PUT")
+	// r.HandleFunc("/tasks/{id}", handlers.UpdateTask).Methods("PUT")
 
-	r.HandleFunc("/tasks/{id}", handlers.DeleteTask).Methods("DELETE")
+	// r.HandleFunc("/tasks/{id}", handlers.DeleteTask).Methods("DELETE")
 
-	loggedRoute := logger.Logging(r.ServeHTTP)
+	// loggedRoute := logger.Logging(r.ServeHTTP)
 
-	http.ListenAndServe(":8080", loggedRoute)
+	r.Run()
 
 }
 
