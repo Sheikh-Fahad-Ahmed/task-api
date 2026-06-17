@@ -14,7 +14,6 @@ import (
 func GetTasks(c *gin.Context) {
 	tasks := store.GetAll()
 	c.JSON(http.StatusOK, tasks)
-
 }
 
 func CreateTask(c *gin.Context) {
@@ -32,24 +31,19 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, newTask)
+	c.JSON(http.StatusCreated, newTask)
 }
 
-func GetTaskByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idString := vars["id"]
-
-	w.Header().Set("Content-Type", "application/json")
+func GetTaskByID(c *gin.Context) {
+	idString := c.Param("id")
 
 	task, err := store.GetByID(idString)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(task)
+	c.JSON(http.StatusOK, task)
 }
 
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
