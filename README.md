@@ -43,19 +43,19 @@ type TaskInput struct {
 
 ### Steps to Run
 
-1. Clone the repository and navigate to the directory
+1. **Clone the repository and navigate to the directory**
 
 ```bash
 cd task-api
 ```
 
-2. Initialize modules and fetch dependencies
+2. **Initialize modules and fetch dependencies**
 
 ```bash
 go mod tidy
 ```
 
-3. Run the server
+3. **Run the server**
 
 ```bash
 go run main.go
