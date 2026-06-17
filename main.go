@@ -14,6 +14,7 @@ func main() {
 
 	r.GET("/tasks", handlers.GetTasks)
 	// r.HandleFunc("/tasks/{id}", handlers.GetTaskByID).Methods("GET")
+	r.GET("tasks/:id", handlers.GetTaskByID)
 
 	r.POST("/tasks", handlers.CreateTask)
 
