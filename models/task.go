@@ -11,9 +11,9 @@ type Task struct {
 }
 
 type TaskInput struct {
-	Title       string `json:"title"`
-	Description string `json:"description,omitempty"`
-	Status      string `json:"status"`
+	Title       string `json:"title" binding:"required"`
+	Description string `json:"description"`
+	Status      string `json:"status" binding:"required"`
 }
 
 func New(id int, title string, description string, status string) *Task {
