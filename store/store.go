@@ -18,8 +18,11 @@ func GetAll() []models.Task {
 	return []models.Task{}
 }
 
-func Add(newTaskInput models.TaskInput) models.Task {
+func Add(newTaskInput models.TaskInput) (models.Task, error) {
 	var id int
+	if newTaskInput.Title == "" {
+		return models.Task{}, errors.New("Title is required")
+	}
 	if len(tasks) > 0 {
 		id = tasks[len(tasks)-1].ID + 1
 	} else {
@@ -31,7 +34,7 @@ func Add(newTaskInput models.TaskInput) models.Task {
 	newTask.CreatedAt = time.Now()
 
 	tasks = append(tasks, *newTask)
-	return *newTask
+	return *newTask, nil
 }
 
 func GetByID(idString string) (models.Task, error) {
