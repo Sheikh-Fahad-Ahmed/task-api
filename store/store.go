@@ -27,7 +27,7 @@ func (s *Store) GetAll() ([]models.Task, error) {
 	}
 	defer rows.Close()
 
-	var tasks []models.Task
+	tasks := []models.Task{}
 	for rows.Next() {
 		var t models.Task
 		rows.Scan(&t.ID, &t.Title, &t.Description, &t.Status, &t.CreatedAt)
