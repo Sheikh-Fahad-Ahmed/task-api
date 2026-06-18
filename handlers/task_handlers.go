@@ -46,27 +46,21 @@ func GetTaskByID(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func UpdateTask(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idString := vars["id"]
-	w.Header().Set("Content-Type", "application/json")
+func UpdateTask(c *gin.Context) {
+	idString := c.Param("id")
 
 	var TaskInput models.TaskInput
-	err := json.NewDecoder(r.Body).Decode(&TaskInput)
+	err := c.ShouldBindJSON(&TaskInput)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"err": "unable to decode request body"})
-		return
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
 	task, err := store.Update(idString, TaskInput)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(task)
+	c.JSON(http.StatusOK, task)
 
 }
 
