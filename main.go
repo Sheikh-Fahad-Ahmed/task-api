@@ -30,10 +30,11 @@ func main() {
 
 	r.PUT("/tasks/:id", taskHandler.UpdateTask)
 
-	r.DELETE("tasks/:id", handlers.DeleteTask)
+	r.DELETE("tasks/:id", taskHandler.DeleteTask)
 
 	// loggedRoute := logger.Logging(r.ServeHTTP)
 
+	log.Printf("Server is running on http://localhost:8080")
 	r.Run()
 
 }
