@@ -16,7 +16,7 @@ func New(taskStore *store.Store) *Handler {
 	return &Handler{taskStore: taskStore}
 }
 
-func (h *Handler)GetTasks(c *gin.Context) {
+func (h *Handler) GetTasks(c *gin.Context) {
 	tasks, err := h.taskStore.GetAll()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -25,7 +25,7 @@ func (h *Handler)GetTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
 }
 
-func (h *Handler ) CreateTask(c *gin.Context) {
+func (h *Handler) CreateTask(c *gin.Context) {
 	var newTaskInput models.TaskInput
 
 	err := c.ShouldBindJSON(&newTaskInput)
@@ -43,7 +43,7 @@ func (h *Handler ) CreateTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, newTask)
 }
 
-func (h *Handler)GetTaskByID(c *gin.Context) {
+func (h *Handler) GetTaskByID(c *gin.Context) {
 	idString := c.Param("id")
 
 	task, err := h.taskStore.GetByID(idString)
@@ -74,15 +74,14 @@ func (h *Handler) UpdateTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func DeleteTask(c *gin.Context) {
+func (h *Handler) DeleteTask(c *gin.Context) {
 	idString := c.Param("id")
 
-	err := store.Delete(idString)
+	err := h.taskStore.Delete(idString)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Task deleted Successfully"})
-
 }
