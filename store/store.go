@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"errors"
+	"strconv"
 	"strings"
 	"time"
 
@@ -64,22 +65,16 @@ func (s *Store) Add(newTaskInput models.TaskInput) (models.Task, error) {
 	return *newTask, err
 }
 
-func GetByID(idString string) (models.Task, error) {
+func (s *Store) GetByID(idString string) (models.Task, error) {
 	id, err := strconv.Atoi(idString)
 	if err != nil {
 		return models.Task{}, errors.New("unable to convert id from string -> int ")
 	}
 
-	if len(tasks) == 0 {
-		return models.Task{}, errors.New("Tasks is empty")
-	}
-
-	for _, task := range tasks {
-		if task.ID == id {
-			return task, nil
-		}
-	}
-	return models.Task{}, errors.New("Task does not exists")
+	var task models.Task
+	row := s.db.QueryRow("SELECT * FROM tasks WHERE id = ?", id)
+	err = row.Scan(&task)
+	return task, err
 }
 
 func Update(idString string, taskInput models.TaskInput) (models.Task, error) {
