@@ -3,7 +3,6 @@ package store
 import (
 	"database/sql"
 	"errors"
-	"strconv"
 	"strings"
 	"time"
 
@@ -20,8 +19,6 @@ func New(database *sql.DB) *Store {
 	}
 }
 
-
-
 func (s *Store) GetAll() ([]models.Task, error) {
 	rows, err := s.db.Query("SELECT * FROM tasks;")
 	if err != nil {
@@ -36,15 +33,21 @@ func (s *Store) GetAll() ([]models.Task, error) {
 		tasks = append(tasks, t)
 	}
 
-
 	return tasks, rows.Err()
 }
 
-func Add(newTaskInput models.TaskInput) (models.Task, error) {
+func (s *Store) Add(newTaskInput models.TaskInput) (models.Task, error) {
 	var id int
+
 	if newTaskInput.Title == "" {
 		return models.Task{}, errors.New("Title is required")
 	}
+
+	tasks, err := s.GetAll()
+	if err != nil {
+		return models.Task{}, err
+	}
+
 	if len(tasks) > 0 {
 		id = tasks[len(tasks)-1].ID + 1
 	} else {
@@ -55,8 +58,10 @@ func Add(newTaskInput models.TaskInput) (models.Task, error) {
 	newTask := models.New(id, title, newTaskInput.Description, newTaskInput.Status)
 	newTask.CreatedAt = time.Now()
 
-	tasks = append(tasks, *newTask)
-	return *newTask, nil
+	_, err = s.db.Exec("INSERT INTO tasks (id, title, description, status, created_at) VALUES (?, ?, ?, ?, ?) ",
+		newTask.ID, newTask.Title, newTask.Description, newTask.Status, newTask.CreatedAt)
+
+	return *newTask, err
 }
 
 func GetByID(idString string) (models.Task, error) {
