@@ -8,6 +8,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Handler struct {
+	taskStore *store.Store
+}
+
+func New(taskStore *store.Store) *Handler {
+	return &Handler{taskStore: taskStore}
+}
+
 func GetTasks(c *gin.Context) {
 	tasks := store.GetAll()
 	c.JSON(http.StatusOK, tasks)
