@@ -28,7 +28,7 @@ func main() {
 
 	r.POST("/tasks", taskHandler.CreateTask)
 
-	r.PUT("/tasks/:id", handlers.UpdateTask)
+	r.PUT("/tasks/:id", taskHandler.UpdateTask)
 
 	r.DELETE("tasks/:id", handlers.DeleteTask)
 
