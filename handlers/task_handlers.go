@@ -25,7 +25,7 @@ func (h *Handler)GetTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
 }
 
-func CreateTask(c *gin.Context) {
+func (h *Handler ) CreateTask(c *gin.Context) {
 	var newTaskInput models.TaskInput
 
 	err := c.ShouldBindJSON(&newTaskInput)
@@ -34,7 +34,7 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	newTask, err := store.Add(newTaskInput)
+	newTask, err := h.taskStore.Add(newTaskInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
