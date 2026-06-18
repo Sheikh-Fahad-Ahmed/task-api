@@ -73,7 +73,7 @@ func (s *Store) GetByID(idString string) (models.Task, error) {
 
 	var task models.Task
 	row := s.db.QueryRow("SELECT * FROM tasks WHERE id = ?", id)
-	err = row.Scan(&task)
+	err = row.Scan(&task.ID, &task.Title, &task.Description, &task.Status, &task.CreatedAt)
 	return task, err
 }
 
@@ -101,17 +101,25 @@ func (s *Store) Update(idString string, taskInput models.TaskInput) (models.Task
 	return task, err
 }
 
-func Delete(idString string) error {
+func (s *Store) Delete(idString string) error {
 	id, err := strconv.Atoi(idString)
 	if err != nil {
 		return errors.New("unable to convert id string -> int")
 	}
 
-	for i, task := range tasks {
-		if task.ID == id {
-			tasks = append(tasks[:i], tasks[i+1:]...)
-			return nil
-		}
+	row, err := s.db.Exec("DELETE FROM tasks WHERE id = ?", id)
+	if err != nil {
+		return err
 	}
+
+	rowsAffected, err := row.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected != 0 {
+		return nil
+	}
+
 	return errors.New("Task not found")
 }
