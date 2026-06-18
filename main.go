@@ -3,12 +3,22 @@ package main
 import (
 	"log"
 
+	"github.com/Sheikh-Fahad-Ahmed/task-api/db"
 	"github.com/Sheikh-Fahad-Ahmed/task-api/handlers"
+	"github.com/Sheikh-Fahad-Ahmed/task-api/store"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	log.SetFlags(log.Ldate | log.Ltime)
+	database, err := db.InitDB("./tasks.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	taskStore := store.New(database)
+
+	taskHandler := handlers.New(taskStore)
 
 	r := gin.Default()
 
@@ -18,9 +28,7 @@ func main() {
 
 	r.POST("/tasks", handlers.CreateTask)
 
-
 	r.PUT("/tasks/:id", handlers.UpdateTask)
-
 
 	r.DELETE("tasks/:id", handlers.DeleteTask)
 
@@ -29,4 +37,3 @@ func main() {
 	r.Run()
 
 }
-
