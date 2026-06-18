@@ -55,7 +55,7 @@ func (h *Handler)GetTaskByID(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-func UpdateTask(c *gin.Context) {
+func (h *Handler) UpdateTask(c *gin.Context) {
 	idString := c.Param("id")
 
 	var TaskInput models.TaskInput
@@ -65,14 +65,13 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	task, err := store.Update(idString, TaskInput)
+	task, err := h.taskStore.Update(idString, TaskInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, task)
-
 }
 
 func DeleteTask(c *gin.Context) {
