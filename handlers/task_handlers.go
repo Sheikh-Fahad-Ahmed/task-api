@@ -43,10 +43,10 @@ func (h *Handler ) CreateTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, newTask)
 }
 
-func GetTaskByID(c *gin.Context) {
+func (h *Handler)GetTaskByID(c *gin.Context) {
 	idString := c.Param("id")
 
-	task, err := store.GetByID(idString)
+	task, err := h.taskStore.GetByID(idString)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
