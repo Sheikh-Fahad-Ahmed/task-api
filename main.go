@@ -22,11 +22,11 @@ func main() {
 
 	r := gin.Default()
 
-	r.GET("/tasks", handlers.GetTasks)
+	r.GET("/tasks", taskHandler.GetTasks)
 
 	r.GET("tasks/:id", handlers.GetTaskByID)
 
-	r.POST("/tasks", handlers.CreateTask)
+	r.POST("/tasks", taskHandler.CreateTask)
 
 	r.PUT("/tasks/:id", handlers.UpdateTask)
 
