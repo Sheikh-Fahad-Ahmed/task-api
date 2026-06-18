@@ -24,7 +24,7 @@ func main() {
 
 	r.GET("/tasks", taskHandler.GetTasks)
 
-	r.GET("tasks/:id", handlers.GetTaskByID)
+	r.GET("tasks/:id", taskHandler.GetTaskByID)
 
 	r.POST("/tasks", taskHandler.CreateTask)
 
