@@ -19,6 +19,7 @@ func main() {
 	r.POST("/tasks", handlers.CreateTask)
 
 	// r.HandleFunc("/tasks/{id}", handlers.UpdateTask).Methods("PUT")
+	r.PUT("/tasks/:id", handlers.UpdateTask)
 
 	// r.HandleFunc("/tasks/{id}", handlers.DeleteTask).Methods("DELETE")
 
