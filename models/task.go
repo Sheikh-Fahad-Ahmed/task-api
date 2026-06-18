@@ -16,6 +16,12 @@ type TaskInput struct {
 	Status      string `json:"status" binding:"required"`
 }
 
+type TaskUpdate struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+}
+
 func New(id int, title string, description string, status string) *Task {
 	return &Task{
 		ID:          id,
