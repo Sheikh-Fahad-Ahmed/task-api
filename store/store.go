@@ -77,17 +77,17 @@ func (s *Store) GetByID(idString string) (models.Task, error) {
 	return task, err
 }
 
-func (s *Store) Update(idString string, taskInput models.TaskInput) (models.Task, error) {
+func (s *Store) Update(idString string, taskUpdate models.TaskUpdate) (models.Task, error) {
 	task, err := s.GetByID(idString)
-	if taskInput.Title != "" {
-		task.Title = strings.TrimSpace(taskInput.Title)
+	if taskUpdate.Title != "" {
+		task.Title = strings.TrimSpace(taskUpdate.Title)
 	}
 
-	if taskInput.Description != "" {
-		task.Description = taskInput.Description
+	if taskUpdate.Description != "" {
+		task.Description = taskUpdate.Description
 	}
-	if taskInput.Status != "" {
-		task.Status = taskInput.Status
+	if taskUpdate.Status != "" {
+		task.Status = taskUpdate.Status
 	}
 
 	task.CreatedAt = time.Now()
