@@ -58,14 +58,14 @@ func (h *Handler) GetTaskByID(c *gin.Context) {
 func (h *Handler) UpdateTask(c *gin.Context) {
 	idString := c.Param("id")
 
-	var TaskInput models.TaskInput
-	err := c.ShouldBindJSON(&TaskInput)
+	var taskUpdate models.TaskUpdate
+	err := c.ShouldBindJSON(&taskUpdate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	task, err := h.taskStore.Update(idString, TaskInput)
+	task, err := h.taskStore.Update(idString, taskUpdate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
