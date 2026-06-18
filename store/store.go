@@ -1,6 +1,7 @@
 package store
 
 import (
+	"database/sql"
 	"errors"
 	"strconv"
 	"strings"
@@ -9,13 +10,34 @@ import (
 	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
 )
 
-var tasks []models.Task
+type Store struct {
+	db *sql.DB
+}
 
-func GetAll() []models.Task {
-	if tasks != nil {
-		return tasks
+func New(database *sql.DB) *Store {
+	return &Store{
+		db: database,
 	}
-	return []models.Task{}
+}
+
+
+
+func (s *Store) GetAll() ([]models.Task, error) {
+	rows, err := s.db.Query("SELECT * FROM tasks;")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tasks []models.Task
+	for rows.Next() {
+		var t models.Task
+		rows.Scan(&t.ID, &t.Title, &t.Description, &t.Status, &t.CreatedAt)
+		tasks = append(tasks, t)
+	}
+
+
+	return tasks, rows.Err()
 }
 
 func Add(newTaskInput models.TaskInput) (models.Task, error) {
