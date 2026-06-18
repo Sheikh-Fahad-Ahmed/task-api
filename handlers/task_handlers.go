@@ -1,14 +1,11 @@
 package handlers
 
 import (
-	"encoding/json"
-
 	"net/http"
 
 	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
 	"github.com/Sheikh-Fahad-Ahmed/task-api/store"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/mux"
 )
 
 func GetTasks(c *gin.Context) {
@@ -53,30 +50,28 @@ func UpdateTask(c *gin.Context) {
 	err := c.ShouldBindJSON(&TaskInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	task, err := store.Update(idString, TaskInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, task)
 
 }
 
-func DeleteTask(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idString := vars["id"]
-	w.Header().Set("Content-Type", "application/json")
+func DeleteTask(c *gin.Context) {
+	idString := c.Param("id")
 
 	err := store.Delete(idString)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "task deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Task deleted Successfully"})
 
 }
