@@ -77,38 +77,28 @@ func (s *Store) GetByID(idString string) (models.Task, error) {
 	return task, err
 }
 
-func Update(idString string, taskInput models.TaskInput) (models.Task, error) {
+func (s *Store) Update(idString string, taskInput models.TaskInput) (models.Task, error) {
+	task, err := s.GetByID(idString)
+	if taskInput.Title != "" {
+		task.Title = strings.TrimSpace(taskInput.Title)
+	}
+
+	if taskInput.Description != "" {
+		task.Description = taskInput.Description
+	}
+	if taskInput.Status != "" {
+		task.Status = taskInput.Status
+	}
+
+	task.CreatedAt = time.Now()
 	id, err := strconv.Atoi(idString)
 	if err != nil {
-		return models.Task{}, errors.New("unable to convert id from string -> int")
+		return models.Task{}, errors.New("unable to convert id from string -> int ")
 	}
 
-	var title, description, status string
-
-	for i, task := range tasks {
-		if task.ID == id {
-			if taskInput.Title != "" {
-				title = strings.TrimSpace(taskInput.Title)
-			} else {
-				title = task.Title
-			}
-			if taskInput.Description != "" {
-				description = taskInput.Description
-			} else {
-				description = task.Description
-			}
-			if taskInput.Status != "" {
-				status = taskInput.Status
-			} else {
-				status = task.Status
-			}
-			tasks[i] = *models.New(id, title, description, status)
-			tasks[i].CreatedAt = time.Now()
-			return tasks[i], nil
-		}
-	}
-
-	return models.Task{}, errors.New("Task not Found..")
+	_, err = s.db.Exec("UPDATE tasks SET title = ?, description = ?, status = ?, created_at = ? WHERE id = ?",
+		task.Title, task.Description, task.Status, task.CreatedAt, id)
+	return task, err
 }
 
 func Delete(idString string) error {
