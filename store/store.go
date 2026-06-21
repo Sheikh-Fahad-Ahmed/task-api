@@ -35,10 +35,20 @@ func (s *Store) checkStatus(newTaskInput *models.TaskInput) bool {
 
 }
 
-func (s *Store) GetAll() ([]models.Task, error) {
-	rows, err := s.db.Query("SELECT * FROM tasks;")
-	if err != nil {
-		return nil, err
+func (s *Store) GetAll(status string) ([]models.Task, error) {
+	var rows *sql.Rows
+	var err error
+	
+	if status == "" {
+		rows, err = s.db.Query("SELECT * FROM tasks;")
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		rows, err = s.db.Query("SELECT * FROM tasks WHERE status = ?", status)
+		if err != nil {
+			return nil, err
+		}
 	}
 	defer rows.Close()
 
