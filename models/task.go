@@ -13,7 +13,7 @@ type Task struct {
 type TaskInput struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description"`
-	Status      string `json:"status" binding:"required"`
+	Status      string `json:"status"`
 }
 
 type TaskUpdate struct {
@@ -22,9 +22,8 @@ type TaskUpdate struct {
 	Status      string `json:"status"`
 }
 
-func New(id int, title string, description string, status string) *Task {
+func New( title string, description string, status string) *Task {
 	return &Task{
-		ID:          id,
 		Title:       title,
 		Description: description,
 		Status:      status,
