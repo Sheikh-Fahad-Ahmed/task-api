@@ -13,7 +13,7 @@ func InitDB(path string) (*sql.DB, error){
 	}
 
 	createTableQuery := `CREATE TABLE IF NOT EXISTS tasks(
-			id INTEGER PRIMARY KEY,
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			title TEXT NOT NULL,
 			description TEXT NOT NULL,
 			status TEXT NOT NULL DEFAULT('pending'),
