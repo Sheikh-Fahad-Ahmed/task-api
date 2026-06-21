@@ -11,13 +11,28 @@ import (
 )
 
 type Store struct {
-	db *sql.DB
+	db     *sql.DB
+	status map[string]struct{}
 }
 
 func New(database *sql.DB) *Store {
 	return &Store{
 		db: database,
+		status: map[string]struct{}{
+			"pending":     {},
+			"in-progress": {},
+			"done":        {},
+		},
 	}
+}
+
+func (s *Store) checkStatus(newTaskInput *models.TaskInput) bool {
+	if newTaskInput.Status == "" {
+		newTaskInput.Status = "pending"
+	}
+	_, exists := s.status[newTaskInput.Status]
+	return exists
+
 }
 
 func (s *Store) GetAll() ([]models.Task, error) {
@@ -42,6 +57,10 @@ func (s *Store) Add(newTaskInput models.TaskInput) (models.Task, error) {
 
 	if newTaskInput.Title == "" {
 		return models.Task{}, errors.New("Title is required")
+	}
+
+	if !s.checkStatus(&newTaskInput) {
+		return models.Task{}, errors.New("Invalid status")
 	}
 
 	tasks, err := s.GetAll()
