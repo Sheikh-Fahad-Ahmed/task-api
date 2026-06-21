@@ -48,7 +48,7 @@ func (h *Handler) GetTaskByID(c *gin.Context) {
 
 	task, err := h.taskStore.GetByID(idString)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID does not exist."})
 		return
 	}
 
