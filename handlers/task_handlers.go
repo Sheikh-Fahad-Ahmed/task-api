@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/Sheikh-Fahad-Ahmed/task-api/models"
@@ -19,6 +20,7 @@ func New(taskStore *store.Store) *Handler {
 func (h *Handler) GetTasks(c *gin.Context) {
 	tasks, err := h.taskStore.GetAll()
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -30,12 +32,14 @@ func (h *Handler) CreateTask(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&newTaskInput)
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	newTask, err := h.taskStore.Add(newTaskInput)
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -48,6 +52,7 @@ func (h *Handler) GetTaskByID(c *gin.Context) {
 
 	task, err := h.taskStore.GetByID(idString)
 	if err != nil {
+		c.Error(errors.New("ID does not exist."))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID does not exist."})
 		return
 	}
@@ -61,12 +66,14 @@ func (h *Handler) UpdateTask(c *gin.Context) {
 	var taskUpdate models.TaskUpdate
 	err := c.ShouldBindJSON(&taskUpdate)
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	task, err := h.taskStore.Update(idString, taskUpdate)
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -79,6 +86,7 @@ func (h *Handler) DeleteTask(c *gin.Context) {
 
 	err := h.taskStore.Delete(idString)
 	if err != nil {
+		c.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
