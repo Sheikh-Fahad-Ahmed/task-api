@@ -2,14 +2,28 @@ package logger
 
 import (
 	"log"
-	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
-func Logging(f http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		start := time.Now()
-		f(w, r)
-		log.Printf("[%s] %s | %v", r.Method, r.URL.Path, time.Since(start))
+func CustomLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		startTime := time.Now()
+
+		c.Next()
+
+		latency := time.Since(startTime)
+
+		status := c.Writer.Status()
+		method := c.Request.Method
+		path := c.Request.URL.Path
+
+		var err string
+		if len(c.Errors) > 0 {
+			err = " | Error: " + c.Errors.String()
+		}
+
+		log.Printf("endpoint %s | %v | %d | %s%s", method, latency, status, path, err)
 	}
 }
