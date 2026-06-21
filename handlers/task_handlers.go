@@ -18,7 +18,9 @@ func New(taskStore *store.Store) *Handler {
 }
 
 func (h *Handler) GetTasks(c *gin.Context) {
-	tasks, err := h.taskStore.GetAll()
+	status := c.Query("status")
+
+	tasks, err := h.taskStore.GetAll(status)
 	if err != nil {
 		c.Error(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
