@@ -53,7 +53,6 @@ func (s *Store) GetAll() ([]models.Task, error) {
 }
 
 func (s *Store) Add(newTaskInput models.TaskInput) (models.Task, error) {
-	var id int
 
 	if newTaskInput.Title == "" {
 		return models.Task{}, errors.New("Title is required")
@@ -63,24 +62,18 @@ func (s *Store) Add(newTaskInput models.TaskInput) (models.Task, error) {
 		return models.Task{}, errors.New("Invalid status")
 	}
 
-	tasks, err := s.GetAll()
+	title := strings.TrimSpace(newTaskInput.Title)
+	newTask := models.New(title, newTaskInput.Description, newTaskInput.Status)
+
+	result, err := s.db.Exec("INSERT INTO tasks (title, description, status, created_at) VALUES (?, ?, ?, ?) ",
+		newTask.Title, newTask.Description, newTask.Status, newTask.CreatedAt)
+
+	id, err := result.LastInsertId()
 	if err != nil {
 		return models.Task{}, err
 	}
 
-	if len(tasks) > 0 {
-		id = tasks[len(tasks)-1].ID + 1
-	} else {
-		id = 1
-	}
-
-	title := strings.TrimSpace(newTaskInput.Title)
-	newTask := models.New(id, title, newTaskInput.Description, newTaskInput.Status)
-	newTask.CreatedAt = time.Now()
-
-	_, err = s.db.Exec("INSERT INTO tasks (id, title, description, status, created_at) VALUES (?, ?, ?, ?, ?) ",
-		newTask.ID, newTask.Title, newTask.Description, newTask.Status, newTask.CreatedAt)
-
+	newTask.ID = int(id)
 	return *newTask, err
 }
 
