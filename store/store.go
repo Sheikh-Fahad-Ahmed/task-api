@@ -38,14 +38,14 @@ func (s *Store) checkStatus(newTaskInput *models.TaskInput) bool {
 func (s *Store) GetAll(status string) ([]models.Task, error) {
 	var rows *sql.Rows
 	var err error
-	
+
 	if status == "" {
-		rows, err = s.db.Query("SELECT * FROM tasks;")
+		rows, err = s.db.Query("SELECT id, title, description, status, created_at FROM tasks;")
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		rows, err = s.db.Query("SELECT * FROM tasks WHERE status = ?", status)
+		rows, err = s.db.Query("SELECT id, title, description, status, created_at FROM tasks WHERE status = ?", status)
 		if err != nil {
 			return nil, err
 		}
@@ -94,7 +94,7 @@ func (s *Store) GetByID(idString string) (models.Task, error) {
 	}
 
 	var task models.Task
-	row := s.db.QueryRow("SELECT * FROM tasks WHERE id = ?", id)
+	row := s.db.QueryRow("SELECT id, title, description, status, created_at FROM tasks WHERE id = ?", id)
 	err = row.Scan(&task.ID, &task.Title, &task.Description, &task.Status, &task.CreatedAt)
 	return task, err
 }
